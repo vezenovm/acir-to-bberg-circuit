@@ -17,6 +17,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "acir-to-bberg-circuit"
+version = "0.1.0"
+dependencies = [
+ "acvm",
+ "base64",
+ "flate2",
+ "noirc_abi",
+ "serde",
+ "serde-big-array",
+ "serde_json",
+]
+
+[[package]]
 name = "acir_field"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -266,19 +279,6 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
-
-[[package]]
-name = "circuit-for-bb-js"
-version = "0.1.0"
-dependencies = [
- "acvm",
- "base64",
- "flate2",
- "noirc_abi",
- "serde",
- "serde-big-array",
- "serde_json",
-]
 
 [[package]]
 name = "const-oid"
