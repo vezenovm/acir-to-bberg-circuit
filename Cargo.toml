@@ -13,8 +13,4 @@ flate2 = "1.0"
 base64 = "0.13"
 
 acvm = { version = "0.15.0", features = ["bn254"] }
-# acvm-backend-barretenberg = { version = "0.5.1", default-features = false }
 noirc_abi = { git = "https://github.com/noir-lang/noir.git" }
-
-# [features]
-# default = ["acvm-backend-barretenberg/wasm"]
