@@ -1,15 +1,8 @@
-
-
 use acvm::acir::circuit::Circuit;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use noirc_abi::Abi;
-use std::{
-    fs::File,
-    io::Write,
-    path::Path,
-};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::{fs::File, io::Write, path::Path};
 
-use base64;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
@@ -20,10 +13,10 @@ pub fn main() {
     let circuit_path = std::env::args().nth(1).expect("no circuit path given");
     let circuit_name = std::env::args().nth(2).expect("no circuit name given");
 
-    let circuit_bytes =
-        std::fs::read(&circuit_path).unwrap();
-    
-    let mut program: PreprocessedProgram = serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
+    let circuit_bytes = std::fs::read(circuit_path).unwrap();
+
+    let mut program: PreprocessedProgram =
+        serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
 
     program.proving_key = vec![];
     program.verification_key = vec![];

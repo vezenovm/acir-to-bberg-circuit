@@ -1,57 +1,9 @@
-use acvm::acir::circuit::opcodes::{BlackBoxFuncCall, MemoryBlock, FunctionInput};
+use acvm::acir::circuit::opcodes::{BlackBoxFuncCall, FunctionInput, MemoryBlock};
 use acvm::acir::circuit::{Circuit, Opcode};
 use acvm::acir::native_types::Expression;
-use acvm::acir::BlackBoxFunc;
 use acvm::FieldElement;
 use serde::{Deserialize, Serialize};
 use serde_big_array::BigArray;
-
-// use crate::{Error, BackendError};
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub(crate) struct Assignments(Vec<FieldElement>);
-
-// This is a separate impl so the constructor can get the wasm_bindgen macro in the future
-impl Assignments {
-    #[allow(dead_code)]
-    pub(crate) fn new() -> Assignments {
-        Assignments::default()
-    }
-}
-
-impl Assignments {
-    pub(crate) fn to_bytes(&self) -> Vec<u8> {
-        let mut buffer = Vec::new();
-
-        let witness_len = self.0.len() as u32;
-        buffer.extend_from_slice(&witness_len.to_be_bytes());
-
-        for assignment in self.0.iter() {
-            buffer.extend_from_slice(&assignment.to_be_bytes());
-        }
-
-        buffer
-    }
-
-    pub(crate) fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-}
-
-impl IntoIterator for Assignments {
-    type Item = FieldElement;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl From<Vec<FieldElement>> for Assignments {
-    fn from(w: Vec<FieldElement>) -> Assignments {
-        Assignments(w)
-    }
-}
 
 #[derive(Clone, Hash, Debug, Serialize, Deserialize)]
 pub(crate) struct Constraint {
@@ -562,10 +514,6 @@ impl ConstraintSystem {
 }
 
 impl ConstraintSystem {
-    pub(crate) fn public_inputs_size(&self) -> usize {
-        self.public_inputs.len()
-    }
-
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut buffer: Vec<u8> = Vec::new();
 
@@ -804,7 +752,6 @@ impl RecursionConstraint {
     }
 }
 
-
 impl TryFrom<&Circuit> for ConstraintSystem {
     type Error = String;
     /// Converts an `IR` into the `StandardFormat` constraint system
@@ -886,7 +833,11 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                             let mut outputs_iter = outputs.iter();
                             let mut result = [0i32; 32];
                             for (i, res) in result.iter_mut().enumerate() {
-                                let out_byte = outputs_iter.next().ok_or_else(|| format!("Missing rest of output. Tried to get byte {i} but failed"))?;
+                                let out_byte = outputs_iter.next().ok_or_else(|| {
+                                    format!(
+                                        "Missing rest of output. Tried to get byte {i} but failed"
+                                    )
+                                })?;
 
                                 let out_byte_index = out_byte.witness_index() as i32;
                                 *res = out_byte_index
@@ -911,8 +862,11 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                             let mut outputs_iter = outputs.iter();
                             let mut result = [0i32; 32];
                             for (i, res) in result.iter_mut().enumerate() {
-                                let out_byte =
-                                    outputs_iter.next().ok_or_else(|| format!("Missing rest of output. Tried to get byte {i} but failed"))?;
+                                let out_byte = outputs_iter.next().ok_or_else(|| {
+                                    format!(
+                                        "Missing rest of output. Tried to get byte {i} but failed"
+                                    )
+                                })?;
 
                                 let out_byte_index = out_byte.witness_index() as i32;
                                 *res = out_byte_index
@@ -976,9 +930,8 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                                 inputs.push(scalar_index);
                             }
 
-                            assert_eq!(outputs.len(), 2);
-                            let result_x = outputs[0].witness_index() as i32;
-                            let result_y = outputs[1].witness_index() as i32;
+                            let result_x = outputs.0.witness_index() as i32;
+                            let result_y = outputs.1.witness_index() as i32;
 
                             let constraint = PedersenConstraint {
                                 inputs,
@@ -1068,9 +1021,8 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                         BlackBoxFuncCall::FixedBaseScalarMul { input, outputs } => {
                             let scalar = input.witness.witness_index() as i32;
 
-                            assert_eq!(outputs.len(), 2);
-                            let pubkey_x = outputs[0].witness_index() as i32;
-                            let pubkey_y = outputs[1].witness_index() as i32;
+                            let pubkey_x = outputs.0.witness_index() as i32;
+                            let pubkey_y = outputs.1.witness_index() as i32;
 
                             let fixed_base_scalar_mul = FixedBaseScalarMulConstraint {
                                 scalar,
@@ -1093,8 +1045,11 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                             let mut outputs_iter = outputs.iter();
                             let mut result = [0i32; 32];
                             for (i, res) in result.iter_mut().enumerate() {
-                                let out_byte =
-                                    outputs_iter.next().ok_or_else(|| format!("Missing rest of output. Tried to get byte {i} but failed"))?;
+                                let out_byte = outputs_iter.next().ok_or_else(|| {
+                                    format!(
+                                        "Missing rest of output. Tried to get byte {i} but failed"
+                                    )
+                                })?;
 
                                 let out_byte_index = out_byte.witness_index() as i32;
                                 *res = out_byte_index
@@ -1125,8 +1080,11 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                             let mut outputs_iter = outputs.iter();
                             let mut result = [0i32; 32];
                             for (i, res) in result.iter_mut().enumerate() {
-                                let out_byte =
-                                    outputs_iter.next().ok_or_else(|| format!("Missing rest of output. Tried to get byte {i} but failed"))?;
+                                let out_byte = outputs_iter.next().ok_or_else(|| {
+                                    format!(
+                                        "Missing rest of output. Tried to get byte {i} but failed"
+                                    )
+                                })?;
 
                                 let out_byte_index = out_byte.witness_index() as i32;
                                 *res = out_byte_index
@@ -1176,11 +1134,12 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                             // key_hash
                             let key_hash = key_hash.witness.witness_index() as i32;
 
-                            let input_agg_obj_inputs = if let Some(input_aggregation_object) = input_aggregation_object {
-                                input_aggregation_object.clone()
-                            } else {
-                                vec![FunctionInput::dummy(); output_aggregation_object.len()]
-                            };
+                            let input_agg_obj_inputs =
+                                if let Some(input_aggregation_object) = input_aggregation_object {
+                                    input_aggregation_object.clone()
+                                } else {
+                                    vec![FunctionInput::dummy(); output_aggregation_object.len()]
+                                };
 
                             // input_aggregation_object
                             let mut input_agg_obj_inputs = input_agg_obj_inputs.iter();
@@ -1215,12 +1174,12 @@ impl TryFrom<&Circuit> for ConstraintSystem {
                                 output_aggregation_object,
                                 nested_aggregation_object,
                             };
-                            
+
                             recursion_constraints.push(recursion_constraint);
                         }
                     };
                 }
-                Opcode::Directive(_) | Opcode::Oracle(_) | Opcode::Brillig(_) => {
+                Opcode::Directive(_) | Opcode::Brillig(_) => {
                     // Directives, Oracles and Brillig are only needed by the pwg
                 }
                 Opcode::Block(_) => {
