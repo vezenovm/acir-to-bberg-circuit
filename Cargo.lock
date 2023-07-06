@@ -31,6 +31,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "acir-to-bberg-circuit"
+version = "0.1.0"
+dependencies = [
+ "acvm",
+ "base64",
+ "flate2",
+ "noirc_abi",
+ "serde",
+ "serde-big-array",
+ "serde_json",
+]
+
+[[package]]
 name = "acir_field"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

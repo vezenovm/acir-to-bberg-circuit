@@ -10,21 +10,20 @@ mod barretenberg_structures;
 use barretenberg_structures::ConstraintSystem;
 
 pub fn main() {
-    let circuit_path = std::env::args().nth(1).expect("no circuit path given");
-    let circuit_name = std::env::args().nth(2).expect("no circuit name given");
+    let path_string = std::env::args()
+        .nth(1)
+        .unwrap_or("./target/main.json".to_owned());
+    let circuit_path = Path::new(&path_string);
 
-    let circuit_bytes = std::fs::read(circuit_path).unwrap();
-
+    let circuit_bytes = std::fs::read(&circuit_path).unwrap();
+  
     let mut program: PreprocessedProgram =
         serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
 
     program.proving_key = vec![];
     program.verification_key = vec![];
 
-    let mut new_circuit_path = std::env::current_dir().unwrap();
-    new_circuit_path = new_circuit_path.join(circuit_name).with_extension("json");
-
-    write_to_file(&serde_json::to_vec(&program).unwrap(), &new_circuit_path);
+    write_to_file(&serde_json::to_vec(&program).unwrap(), &circuit_path);
 }
 
 fn write_to_file(bytes: &[u8], path: &Path) -> String {

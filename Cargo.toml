@@ -1,5 +1,5 @@
 [package]
-name = "circuit-for-bb-js"
+name = "acir-to-bberg-circuit"
 version = "0.1.0"
 edition = "2021"
 
