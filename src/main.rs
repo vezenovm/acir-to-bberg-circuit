@@ -3,7 +3,6 @@ use noirc_abi::Abi;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{fs::File, io::Write, path::Path};
 
-use base64;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
@@ -17,7 +16,7 @@ pub fn main() {
     let circuit_path = Path::new(&path_string);
 
     let circuit_bytes = std::fs::read(&circuit_path).unwrap();
-
+  
     let mut program: PreprocessedProgram =
         serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
 
