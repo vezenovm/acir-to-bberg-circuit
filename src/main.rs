@@ -16,7 +16,7 @@ pub fn main() {
     let circuit_path = Path::new(&path_string);
 
     let circuit_bytes = std::fs::read(&circuit_path).unwrap();
-  
+
     let mut program: PreprocessedProgram =
         serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
 
