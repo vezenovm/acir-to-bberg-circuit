@@ -16,12 +16,12 @@ pub fn main() {
     let circuit_path = Path::new(&path_string);
 
     let circuit_bytes = std::fs::read(&circuit_path).unwrap();
-  
+
     let mut program: PreprocessedProgram =
         serde_json::from_slice(&circuit_bytes).expect("could not deserialize program");
 
-    program.proving_key = vec![];
-    program.verification_key = vec![];
+    program.proving_key = None;
+    program.verification_key = None;
 
     write_to_file(&serde_json::to_vec(&program).unwrap(), &circuit_path);
 }
@@ -51,8 +51,8 @@ pub struct PreprocessedProgram {
     )]
     pub bytecode: Circuit,
 
-    pub proving_key: Vec<u8>,
-    pub verification_key: Vec<u8>,
+    pub proving_key: Option<Vec<u8>>,
+    pub verification_key: Option<Vec<u8>>,
 }
 
 fn serialize_circuit<S>(circuit: &Circuit, s: S) -> Result<S::Ok, S::Error>
